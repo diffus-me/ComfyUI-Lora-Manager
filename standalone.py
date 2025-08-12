@@ -88,9 +88,9 @@ class MockMetadataCollector:
         return {}
 
 # Initialize basic mocks before any imports
-sys.modules['folder_paths'] = MockFolderPaths()
-sys.modules['server'] = type('server', (), {'PromptServer': MockPromptServer()})
-sys.modules['py.metadata_collector'] = MockMetadataCollector()
+# sys.modules['folder_paths'] = MockFolderPaths()
+# sys.modules['server'] = type('server', (), {'PromptServer': MockPromptServer()})
+# sys.modules['py.metadata_collector'] = MockMetadataCollector()
 
 # Now we can safely import modules that depend on folder_paths and server
 import argparse

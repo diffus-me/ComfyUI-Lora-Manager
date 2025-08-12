@@ -9,13 +9,16 @@ from ..metadata_collector import get_metadata
 from PIL import Image, PngImagePlugin
 import piexif
 
+import execution_context
+
+
 class SaveImage:
     NAME = "Save Image (LoraManager)"
     CATEGORY = "Lora Manager/utils"
     DESCRIPTION = "Save images with embedded generation metadata in compatible format"
 
     def __init__(self):
-        self.output_dir = folder_paths.get_output_directory()
+        # self.output_dir = folder_paths.get_output_directory()
         self.type = "output"
         self.prefix_append = ""
         self.compress_level = 4
@@ -61,6 +64,7 @@ class SaveImage:
                 "id": "UNIQUE_ID",
                 "prompt": "PROMPT",
                 "extra_pnginfo": "EXTRA_PNGINFO",
+                "context": "EXECUTION_CONTEXT",
             },
         }
 
@@ -306,7 +310,8 @@ class SaveImage:
         return filename
 
     def save_images(self, images, filename_prefix, file_format, id, prompt=None, extra_pnginfo=None, 
-                   lossless_webp=True, quality=100, embed_workflow=False, add_counter_to_filename=True):
+                   lossless_webp=True, quality=100, embed_workflow=False, add_counter_to_filename=True,
+                   context: execution_context.ExecutionContext=None):
         """Save images with metadata"""
         results = []
 
@@ -320,8 +325,9 @@ class SaveImage:
         filename_prefix = self.format_filename(filename_prefix, metadata_dict)
         
         # Get initial save path info once for the batch
+        output_dir = folder_paths.get_output_directory(context.user_hash)
         full_output_folder, filename, counter, subfolder, processed_prefix = folder_paths.get_save_image_path(
-            filename_prefix, self.output_dir, images[0].shape[1], images[0].shape[0]
+            filename_prefix, output_dir, images[0].shape[1], images[0].shape[0]
         )
         
         # Create directory if it doesn't exist
@@ -413,10 +419,11 @@ class SaveImage:
         return results
 
     def process_image(self, images, id, filename_prefix="ComfyUI", file_format="png", prompt=None, extra_pnginfo=None,
-                     lossless_webp=True, quality=100, embed_workflow=False, add_counter_to_filename=True):
+                     lossless_webp=True, quality=100, embed_workflow=False, add_counter_to_filename=True,
+                     context: execution_context.ExecutionContext=None ):
         """Process and save image with metadata"""
         # Make sure the output directory exists
-        os.makedirs(self.output_dir, exist_ok=True)
+        # os.makedirs(self.output_dir, exist_ok=True)
         
         # If images is already a list or array of images, do nothing; otherwise, convert to list
         if isinstance(images, (list, np.ndarray)):
@@ -439,7 +446,8 @@ class SaveImage:
             lossless_webp,
             quality,
             embed_workflow,
-            add_counter_to_filename
+            add_counter_to_filename,
+            context=context,
         )
         
         return (images,)

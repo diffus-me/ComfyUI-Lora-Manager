@@ -3,7 +3,6 @@ const extension = {
     name: "lora-manager.widget",
 };
 
-app.registerExtension(extension);
 const config = {
     newTab: true,
     newWindow: {
@@ -107,7 +106,7 @@ const initializeWidgets = () => {
 // Fetch version info from the API
 const fetchVersionInfo = async () => {
     try {
-        const response = await fetch('/api/version-info');
+        const response = await fetch('api/version-info');
         const data = await response.json();
         
         if (data.success) {
@@ -139,8 +138,8 @@ const registerAboutBadge = async () => {
 
 // Initialize everything
 const initialize = () => {
-    initializeWidgets();
-    registerAboutBadge();
+    // initializeWidgets();
+    // registerAboutBadge();
 };
 
 const getLoraManagerIcon = () => {

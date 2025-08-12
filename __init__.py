@@ -6,7 +6,7 @@ from .py.nodes.save_image import SaveImage
 from .py.nodes.debug_metadata import DebugMetadata
 from .py.nodes.wanvideo_lora_select import WanVideoLoraSelect
 # Import metadata collector to install hooks on startup
-from .py.metadata_collector import init as init_metadata_collector
+# from .py.metadata_collector import init as init_metadata_collector
 
 NODE_CLASS_MAPPINGS = {
     LoraManagerLoader.NAME: LoraManagerLoader,
@@ -21,8 +21,8 @@ NODE_CLASS_MAPPINGS = {
 WEB_DIRECTORY = "./web/comfyui"
 
 # Initialize metadata collector
-init_metadata_collector()
+# init_metadata_collector()
 
 # Register routes on import
-LoraManager.add_routes()
+# LoraManager.add_routes()
 __all__ = ['NODE_CLASS_MAPPINGS', 'WEB_DIRECTORY']

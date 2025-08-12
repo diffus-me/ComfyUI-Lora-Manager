@@ -25,6 +25,9 @@ class WanVideoLoraSelect:
                 }),
             },
             "optional": FlexibleOptionalInputType(any_type),
+            "hidden": {
+                "context": "EXECUTION_CONTEXT",
+            }
         }
 
     RETURN_TYPES = ("WANVIDLORA", IO.STRING, IO.STRING)
@@ -48,7 +51,7 @@ class WanVideoLoraSelect:
         blocks = kwargs.get('blocks', {})
         selected_blocks = blocks.get("selected_blocks", {})
         layer_filter = blocks.get("layer_filter", "")
-        
+        context = kwargs.get('context')
         # Process loras from kwargs with support for both old and new formats
         loras_from_widget = get_loras_list(kwargs)
         for lora in loras_from_widget:
@@ -64,7 +67,7 @@ class WanVideoLoraSelect:
             
             # Create lora item for WanVideo format
             lora_item = {
-                "path": folder_paths.get_full_path("loras", lora_path),
+                "path": folder_paths.get_full_path(context, "loras", lora_path),
                 "strength": model_strength,
                 "name": lora_path.split(".")[0],
                 "blocks": selected_blocks,

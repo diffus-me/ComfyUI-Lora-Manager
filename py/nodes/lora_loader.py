@@ -5,6 +5,8 @@ from comfy.comfy_types import IO # type: ignore
 from ..utils.utils import get_lora_info
 from .utils import FlexibleOptionalInputType, any_type, extract_lora_name, get_loras_list, nunchaku_load_lora
 
+import execution_context
+
 logger = logging.getLogger(__name__)
 
 class LoraManagerLoader:
@@ -26,6 +28,9 @@ class LoraManagerLoader:
                 }),
             },
             "optional": FlexibleOptionalInputType(any_type),
+            "hidden": {
+                "context": "EXECUTION_CONTEXT",
+            }
         }
 
     RETURN_TYPES = ("MODEL", "CLIP", IO.STRING, IO.STRING)
@@ -39,6 +44,7 @@ class LoraManagerLoader:
         
         clip = kwargs.get('clip', None)
         lora_stack = kwargs.get('lora_stack', None)
+        context = kwargs.get('context')
         
         # Check if model is a Nunchaku Flux model - simplified approach
         is_nunchaku_model = False
@@ -63,7 +69,7 @@ class LoraManagerLoader:
                     # clip remains unchanged for Nunchaku models
                 else:
                     # Use default loader for standard models
-                    model, clip = LoraLoader().load_lora(model, clip, lora_path, model_strength, clip_strength)
+                    model, clip = LoraLoader().load_lora(model, clip, lora_path, model_strength, clip_strength, context=context)
                 
                 # Extract lora name for trigger words lookup
                 lora_name = extract_lora_name(lora_path)
@@ -97,7 +103,7 @@ class LoraManagerLoader:
                 # clip remains unchanged
             else:
                 # Use default loader for standard models
-                model, clip = LoraLoader().load_lora(model, clip, lora_path, model_strength, clip_strength)
+                model, clip = LoraLoader().load_lora(model, clip, lora_path, model_strength, clip_strength, context=context)
             
             # Include clip strength in output if different from model strength and not a Nunchaku model
             if not is_nunchaku_model and abs(model_strength - clip_strength) > 0.001:
@@ -150,6 +156,9 @@ class LoraManagerTextLoader:
             "optional": {
                 "clip": ("CLIP",),
                 "lora_stack": ("LORA_STACK",),
+            },
+            "hidden": {
+                "context": "EXECUTION_CONTEXT",
             }
         }
 
@@ -177,7 +186,7 @@ class LoraManagerTextLoader:
         
         return loras
     
-    def load_loras_from_text(self, model, lora_syntax, clip=None, lora_stack=None):
+    def load_loras_from_text(self, model, lora_syntax, clip=None, lora_stack=None, context: execution_context.ExecutionContext=None):
         """Load LoRAs based on text syntax input."""
         loaded_loras = []
         all_trigger_words = []
@@ -205,7 +214,7 @@ class LoraManagerTextLoader:
                     # clip remains unchanged for Nunchaku models
                 else:
                     # Use default loader for standard models
-                    model, clip = LoraLoader().load_lora(model, clip, lora_path, model_strength, clip_strength)
+                    model, clip = LoraLoader().load_lora(model, clip, lora_path, model_strength, clip_strength, context=context)
                 
                 # Extract lora name for trigger words lookup
                 lora_name = extract_lora_name(lora_path)
@@ -235,7 +244,7 @@ class LoraManagerTextLoader:
                 # clip remains unchanged
             else:
                 # Use default loader for standard models
-                model, clip = LoraLoader().load_lora(model, clip, lora_path, model_strength, clip_strength)
+                model, clip = LoraLoader().load_lora(model, clip, lora_path, model_strength, clip_strength, context=context)
             
             # Include clip strength in output if different from model strength and not a Nunchaku model
             if not is_nunchaku_model and abs(model_strength - clip_strength) > 0.001:
